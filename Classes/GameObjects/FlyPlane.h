@@ -14,8 +14,7 @@ public:
 	void Moveto(cocos2d::Vec2);
 	void Destory();
 	void FlyAction();
-	//void SetViews();
-
+	CC_SYNTHESIZE(bool, isAlive,IsAlive);
 };
 
 #endif // FlyPlane_h__

@@ -3,7 +3,7 @@
 #include "SimpleAudioEngine.h"
 USING_NS_CC;
 using namespace CocosDenshion;
-bullet::bullet(void):vy(35.0f)
+bullet::bullet(void):vy(10.0f)
 {
 }
 
@@ -14,23 +14,23 @@ bullet::~bullet(void)
 
 bool bullet::init()
 {
+	bool ret=false;
 	do 
 	{
-		bool ret=false;
 		if(Sprite::init())
 		{
-			initWithFile("bullet_1.png");
+			initWithSpriteFrameName("bullet1.png");
 			ret=true;
 		}
-		return ret;
 	} while (0);
+	return ret;
 }
 
 
 void bullet::move()
 {
 	float nestPosY=this->getPositionY()+vy;
-	SimpleAudioEngine::getInstance()->playEffect("shoot.mp3");
+	//SimpleAudioEngine::getInstance()->playEffect("shoot.mp3");
 	this->setPositionY(nestPosY);
 	if(nestPosY>=VisibleRect::top().y+this->getContentSize().height/2)
 		this->removeFromParent();
@@ -39,5 +39,6 @@ void bullet::move()
 
 bool bullet::testhurt(EnemyBase*enemy)
 {
-	return  enemy->getBoundingBox().containsPoint(this->getPosition());
+
+	return  enemy->getBoundingBox().intersectsRect(this->getBoundingBox());
 }

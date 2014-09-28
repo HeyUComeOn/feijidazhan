@@ -2,10 +2,10 @@
 #include "GameObjects/Background.h"
 #include "VisibleRect.h"
 #include "GameLayer/welcomeLayer.h"
+#include "Dlog.h"
 USING_NS_CC;
 
-InGameLayer::InGameLayer(void):EneVec(),bulletVec(),hero(nullptr)
-
+InGameLayer::InGameLayer(void):EneVec(),bulletVec(),hero(NULL)
 {
 }
 
@@ -16,16 +16,15 @@ InGameLayer::~InGameLayer(void)
 
 bool InGameLayer::init()
 {
+	bool ret=false;
 	do 
 	{
-		bool ret=false;
 		if(Layer::init())
 		{
-			
 			ret=true;
 		}
-		return ret;
 	} while (0);
+	return ret;
 }
 
 void InGameLayer::onEnterTransitionDidFinish()
@@ -47,17 +46,21 @@ void InGameLayer::setViews()
 	back->setPosition(Vec2(0,0));
 	addChild(back);
 	
+	auto bombLabel=Sprite::createWithSpriteFrameName("bomb.png");
+	bombLabel->setPosition(VisibleRect::leftBottom()+Vec2(bombLabel->getContentSize().width/2,bombLabel->getContentSize().height/2));
+	addChild(bombLabel);
+	
 	hero=FlyPlane::create();
-	hero->setAnchorPoint(Vec2(0.5f,0.5f));
-	hero->setPosition(VisibleRect::top());
+	hero->setPosition(Vec2(VisibleRect::center().x,120));//hero的contentsize为0，为什么
+	hero->setIsAlive(true);
 	addChild(hero);
 	m_Pos=hero->getPosition();
 	addEvents();
 	//
 	this->schedule(SEL_SCHEDULE(&InGameLayer::createEnemys),CCRANDOM_0_1()+1.3f);
 	this->schedule(SEL_SCHEDULE(&InGameLayer::moveAllEnemys),0.08f);
-	this->schedule(SEL_SCHEDULE(&InGameLayer::createbullets),CCRANDOM_0_1()+0.3f);
-	this->schedule(SEL_SCHEDULE(&InGameLayer::moveAllbullets),0.03f);
+	this->schedule(SEL_SCHEDULE(&InGameLayer::createbullets),0.2f);
+	this->schedule(SEL_SCHEDULE(&InGameLayer::moveAllbullets),0.016f);
 	
 	this->scheduleUpdate();	
 }
@@ -70,7 +73,7 @@ void InGameLayer::update(float t)
 void InGameLayer::createEnemys(float t)
 {
 	auto newEny=EnemyBase::create();
-	int x=CCRANDOM_0_1()+1.3;
+	int x=CCRANDOM_0_1()*1.4+0.9;
 	newEny->initEnemy(x);
 	addChild(newEny);
 	EneVec.pushBack(newEny);
@@ -79,12 +82,16 @@ void InGameLayer::createEnemys(float t)
 
 void InGameLayer::createbullets(float t)
 {
-	auto mbullet=bullet::create();
-	
-	mbullet->setPosition(hero->getPosition());
-	addChild(mbullet);
-	bulletVec.pushBack(mbullet);
+	if(hero&&hero->getIsAlive())
+	{
+		auto mbullet=bullet::create();
+		mbullet->setPosition(hero->getPosition());
+		addChild(mbullet);
+		bulletVec.pushBack(mbullet);
+	}
+
 }
+
 void InGameLayer::addEvents()
 {
 	auto listener=EventListenerTouchOneByOne::create();
@@ -94,16 +101,19 @@ void InGameLayer::addEvents()
 }
 bool InGameLayer::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *unused_event)
 {
-	log("touch began");
-
-	return true;
+	if(hero&&hero->getIsAlive())
+	{
+		Dlog::showLog("touch began");
+		return true;
+	}
+	return false;
 }
 void InGameLayer::onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event)
 {
-	log("touch move");
+	Dlog::showLog("touch move");
 	m_Pos=touch->getLocation();
 	
-	if(hero->getBoundingBox().containsPoint(m_Pos))
+	if(hero&&hero->getIsAlive()&&hero->getBoundingBox().containsPoint(m_Pos))
 		hero->Moveto(m_Pos);
 }
 
@@ -148,7 +158,7 @@ void InGameLayer::bulletAttackEnemy()
 
 				bult->removeFromParent();
 				bulletVec.erase(j);
-				Ene->hurt(10);
+				Ene->hurt(1);
 				if(Ene->getIsBlowUp())
 				{
 					EneVec.erase(i);
@@ -163,23 +173,49 @@ void InGameLayer::bulletAttackEnemy()
 
 void InGameLayer::EnemyAttackPlane()
 {
-	Vector<EnemyBase*>::iterator it=EneVec.begin();
-	while(it!=EneVec.end())
+	if(hero&&hero->getIsAlive())
 	{
-		//Size size=(*it)->getContentSize();
-		if(hero->getBoundingBox().containsPoint((*it)->getPosition()))
+		Vector<EnemyBase*>::iterator it=EneVec.begin();
+		auto heroRect=hero->getBoundingBox();
+		heroRect.origin.x+=60;
+		heroRect.origin.y+=25;//origin为图左下角
+		heroRect.size.width=80;
+		heroRect.size.height=90;
+		while(it!=EneVec.end())
 		{
-			GameOver();
-			break;
+			if(heroRect.intersectsRect((*it)->getBoundingBox()))
+			{
+				hero->Destory();//hero被销毁了
+				hero->setIsAlive(false);
+				hero=NULL;
+				//GameOver();
+				break;
+			}
+			++it;
 		}
-		++it;
 	}
+
 }
 
 void InGameLayer::GameOver()
 {
 	/*换场景时必须删除监听器*/
+
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	Director::getInstance()->replaceScene(TransitionCrossFade::create(1.5f,welcomeLayer::scene()));
-	//log("GameOver");
+}
+
+void InGameLayer::cleanAllEnemys()
+{
+	for(int i=EneVec.size()-1;i>=0;--i)
+	{
+		auto Ene=EneVec.at(i);
+		Ene->hurt(5);
+		if(Ene->getIsBlowUp())
+		{
+			EneVec.erase(i);
+			break;
+		}
+	}
+			//正序删与倒序删1  2  3  4
 }
