@@ -20,9 +20,11 @@ public:
 	void BlowupAction();
 	CC_SYNTHESIZE_READONLY(bool,isBlowUp,IsBlowUp);
 	CC_SYNTHESIZE_READONLY(int,hp,HP);
+	CC_SYNTHESIZE(int, enemyType,EnemyType);
+	
 private:
-	std::string EnemyType;
-	float vy;
+		float vy;
+		
 };
 
 #endif // EnemyBase_h__

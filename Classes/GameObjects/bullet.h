@@ -11,7 +11,7 @@ public:
 	bool init()override;
 	CREATE_FUNC(bullet);
 	void move();
-	bool testhurt(EnemyBase*);
+	/*bool testhurt(EnemyBase*);*/
 private:
 	float vy;
 };

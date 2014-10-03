@@ -1,4 +1,4 @@
-#include "Background.h"
+#include "GameObjects/Background.h"
 USING_NS_CC;
 
 Background::Background(void):m_Background_1(nullptr),m_Background_2(nullptr),vy(6.0f)

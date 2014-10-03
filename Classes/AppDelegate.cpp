@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "GameLayer/welcomeLayer.h"
+#include "GameLayer/LoadingLayer.h"
 
 USING_NS_CC;
 
@@ -28,7 +28,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    auto scene = welcomeLayer::scene();
+    auto scene = LoadingLayer::scene();
 	
     // run
     director->runWithScene(scene);

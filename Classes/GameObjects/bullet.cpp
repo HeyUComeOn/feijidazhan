@@ -1,9 +1,9 @@
-#include "bullet.h"
+#include "GameObjects/bullet.h"
 #include "VisibleRect.h"
 #include "SimpleAudioEngine.h"
 USING_NS_CC;
 using namespace CocosDenshion;
-bullet::bullet(void):vy(10.0f)
+bullet::bullet(void):vy(45.0f)
 {
 }
 
@@ -20,6 +20,13 @@ bool bullet::init()
 		if(Sprite::init())
 		{
 			initWithSpriteFrameName("bullet1.png");
+			auto body = PhysicsBody::createBox(this->getContentSize());
+
+			body->setCategoryBitmask(0x01);			//0001
+			body->setCollisionBitmask(0x02);		//0010
+			body->setContactTestBitmask(0x01);
+
+			this->setPhysicsBody(body);
 			ret=true;
 		}
 	} while (0);
@@ -37,8 +44,9 @@ void bullet::move()
 
 }
 
+/*
 bool bullet::testhurt(EnemyBase*enemy)
 {
 
 	return  enemy->getBoundingBox().intersectsRect(this->getBoundingBox());
-}
+}*/

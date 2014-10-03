@@ -1,4 +1,4 @@
-#include "FlyPlane.h"
+#include "GameObjects/FlyPlane.h"
 #include "VisibleRect.h"
 USING_NS_CC;
 
@@ -20,6 +20,23 @@ bool FlyPlane::init()
 		{	
 			initWithSpriteFrameName("hero1.png");
 			this->setAnchorPoint(Vec2(0.5,0.5));
+			Vec2 verts[] ={ 
+				Vec2(35.000,-8.000),
+				Vec2(50.000,-48.000),
+				Vec2(32.000,-59.000),
+				Vec2(-36.000,-59.000), 
+				Vec2(-52.000,-49.000), 
+				Vec2(-37.000,-10.000), 
+				Vec2(0.000,39.000)
+			};
+
+			auto body = PhysicsBody::createPolygon(verts, 7);
+
+			body->setCategoryBitmask(0x01);			//0001
+			body->setCollisionBitmask(0x02);		//0010
+			body->setContactTestBitmask(0x01);
+
+			this->setPhysicsBody(body);
 			FlyAction();
 			ret=true;
 		}

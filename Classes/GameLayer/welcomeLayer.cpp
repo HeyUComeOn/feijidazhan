@@ -1,6 +1,9 @@
-#include "welcomeLayer.h"
+#include "GameLayer/welcomeLayer.h"
 #include "VisibleRect.h"
 #include "GameLayer/InGameLayer.h"
+#include "SimpleAudioEngine.h"
+using namespace CocosDenshion;
+
 welcomeLayer::welcomeLayer(void)
 {
 }
@@ -12,7 +15,7 @@ welcomeLayer::~welcomeLayer(void)
 
 void welcomeLayer::setViews()
 {
-	preload();
+	
 	auto bg=Sprite::createWithSpriteFrameName("background.png");
 	bg->setPosition(VisibleRect::center());
 	bg->setAnchorPoint(Vec2(0.5,0.5));
@@ -22,7 +25,7 @@ void welcomeLayer::setViews()
 	logAction();
 
 	//
-	auto plylb=Label::createWithTTF("Play game","COOPBL.TTF",68);
+	auto plylb=Label::createWithTTF("Play game","fonts/COOPBL.TTF",68);
 	auto item1=MenuItemLabel::create(plylb,CC_CALLBACK_1(welcomeLayer::plybtnGm,this));
 	auto menu=Menu::create(item1,NULL);
 	addChild(menu);
@@ -41,6 +44,12 @@ bool welcomeLayer::init()
 
 	} while (0);
 	return ret;
+}
+
+void welcomeLayer::onEnter()
+{
+	Layer::onEnter();
+	
 }
 
 Scene*welcomeLayer::scene()
@@ -79,56 +88,6 @@ void welcomeLayer::callback(Ref*pSender)
 }
 void welcomeLayer::plybtnGm(Ref*pSender)
 {
-	Director::getInstance()->replaceScene(TransitionJumpZoom::create(1.0f,InGameLayer::scene()));
+	Director::getInstance()->replaceScene(/*TransitionJumpZoom::create(1.0f,*/InGameLayer::scene()/*)*/);
 }
 
-void welcomeLayer::preload()
-{
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("shoot.plist");
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("shoot_background.plist");
-	auto animation1=Animation::create();
-	animation1->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("hero_blowup_n1.png"));
-	animation1->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("hero_blowup_n2.png"));
-	animation1->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("hero_blowup_n3.png"));
-	animation1->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("hero_blowup_n4.png"));
-	animation1->setLoops(1);
-	animation1->setDelayPerUnit(0.1f);
-	AnimationCache::getInstance()->addAnimation(animation1,"heroBlowup");
-
-	auto animation2=Animation::create();
-	animation2->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy1_down1.png"));
-	animation2->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy1_down2.png"));
-	animation2->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy1_down3.png"));
-	animation2->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy1_down4.png"));
-	animation2->setLoops(1);
-	animation2->setDelayPerUnit(0.1f);
-	AnimationCache::getInstance()->addAnimation(animation2,"enemy1Down");
-
-	auto animation3=Animation::create();
-	animation3->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy2_down1.png"));
-	animation3->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy2_down3.png"));
-	animation3->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy2_down3.png"));
-	animation3->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy2_down4.png"));
-	animation3->setLoops(1);
-	animation3->setDelayPerUnit(0.2f);
-	AnimationCache::getInstance()->addAnimation(animation3,"enemy2Down");
-
-	auto animation4=Animation::create();
-	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down1.png"));
-	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down2.png"));
-	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down3.png"));
-	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down4.png"));
-	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down5.png"));
-	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down6.png"));
-	animation4->setLoops(1);
-	animation4->setDelayPerUnit(0.2f);
-	AnimationCache::getInstance()->addAnimation(animation4,"enemy3Down");
-
-	auto animation5=Animation::create();
-	animation5->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_n1.png"));
-	animation5->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_n2.png"));
-	animation5->setDelayPerUnit(0.2f);
-	animation5->setLoops(-1);
-	AnimationCache::getInstance()->addAnimation(animation5,"enemy3Move");
-
-}

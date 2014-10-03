@@ -10,6 +10,7 @@ public:
 	~welcomeLayer(void);
 
 public:
+	void onEnter();
 	void setViews();
 	bool init()override;
 	CREATE_FUNC(welcomeLayer);
@@ -17,7 +18,7 @@ public:
 	void logAction();
 	void callback(Ref*pSender);
 	void plybtnGm(Ref*pSender);
-	void preload();
+	
 };
 
 #endif // welcomeLayer_h__
