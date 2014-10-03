@@ -16,8 +16,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-        glview = GLView::createWithRect("War of Planes",Rect(0,0,480,800));//注意不要让屏幕在windows中无法显示，会出现奇葩错误，可以利用ZoomFactor调节
-		glview->setFrameZoomFactor(0.65f);
+        glview = GLView::createWithRect("War of Planes",Rect(0,0,800,1280));//注意不要让屏幕在windows中无法显示，会出现奇葩错误，可以利用ZoomFactor调节
+		//glview->setFrameZoomFactor(0.65f);
         director->setOpenGLView(glview);
     }
 
@@ -26,6 +26,30 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
+
+
+	//屏幕大小
+	auto screenSize = glview->getFrameSize();
+
+	//设计分辨率大小
+	auto designSize = Size(400, 640);
+	//资源大小
+	auto resourceSize = Size(480, 800);
+
+	std::vector<std::string> searchPaths;
+
+	if (screenSize.height > 960) {	//640x1136
+		designSize = Size(800, 1280);
+		searchPaths.push_back("texture");
+	} else {
+		searchPaths.push_back("texture");
+	}
+
+	director->setContentScaleFactor(resourceSize.width/designSize.width); 
+
+	FileUtils::getInstance()->setSearchPaths(searchPaths);
+
+	glview->setDesignResolutionSize(designSize.width, designSize.height, ResolutionPolicy::FIXED_WIDTH);
 
     // create a scene. it's an autorelease object
     auto scene = LoadingLayer::scene();

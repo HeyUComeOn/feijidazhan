@@ -10,6 +10,8 @@
 #define GameSceneNodeBatchTagBomb2					906
 #define GameSceneNodeBatchTagLayer					907
 #define GameSceneNodeBatchTagBackground		908
+#define GameSceneNodelblHighScore		909
+
 
 #include "cocos2d.h"
 #include "GameObjects/FlyPlane.h"

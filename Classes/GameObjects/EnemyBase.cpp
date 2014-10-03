@@ -75,37 +75,37 @@ void EnemyBase::initEnemy(int Enetype)
 	initWithSpriteFrameName(enemyName);
 	//this->autorelease();²»ÄÜ¼Ó
 	if  (enemyType == 1) {
-		Vec2 verts[] ={ 
-			Vec2(4.500,-17.500),
-			Vec2(-2.500,-17.500), 
-			Vec2(-23.500,3.500),
-			Vec2(-11.500,16.500), 
-			Vec2(13.500,17.500), 
-			Vec2(25.500,3.500)	};
+		Vec2 verts[] ={  
+			Vec2(4.500,-17.500)*5/3,
+			Vec2(-2.500,-17.500)*5/3, 
+			Vec2(-23.500,3.500)*5/3,
+			Vec2(-11.500,16.500)*5/3, 
+			Vec2(13.500,17.500)*5/3, 
+			Vec2(25.500,3.500)	*5/3};
 		body->addShape(PhysicsShapePolygon::create(verts ,6));
 	}
 	else if(enemyType == 2)
 	{
 		Vec2 verts[] ={ 
-			Vec2(-33.500,16.500),
-			Vec2(-3.500,45.500),
-			Vec2(3.500,45.500),
-			Vec2(33.500,15.500), 
-			Vec2(33.500,-14.500), 
-			Vec2(5.500,-40.500), 
-			Vec2(-5.500,-40.500), 
-			Vec2(-33.500,-15.500)	};
+			Vec2(-33.500,16.500)*5/3,
+			Vec2(-3.500,45.500)*5/3,
+			Vec2(3.500,45.500)*5/3,
+			Vec2(33.500,15.500)*5/3, 
+			Vec2(33.500,-14.500)*5/3, 
+			Vec2(5.500,-40.500)*5/3, 
+			Vec2(-5.500,-40.500)*5/3, 
+			Vec2(-33.500,-15.500)*5/3	};
 		body->addShape(PhysicsShapePolygon::create(verts ,8));
 	}
 	else
 	{
 		Vec2 verts[] ={ 
-			Vec2(67.500,125.000),
-			Vec2(83.500,-72.000), 
-			Vec2(39.500,-114.000), 
-			Vec2(-34.500,-114.000), 
-			Vec2(-81.500,-71.000), 
-			Vec2(-66.500,125.000)};
+			Vec2(67.500,125.000)*5/3,
+			Vec2(83.500,-72.000)*5/3, 
+			Vec2(39.500,-114.000)*5/3, 
+			Vec2(-34.500,-114.000)*5/3, 
+			Vec2(-81.500,-71.000)*5/3, 
+			Vec2(-66.500,125.000)*5/3};
 		body->addShape(PhysicsShapePolygon::create(verts ,6));
 		SimpleAudioEngine::getInstance()->playEffect("sound/big_spaceship_flying.mp3");
 	}

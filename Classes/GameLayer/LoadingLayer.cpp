@@ -195,7 +195,7 @@ void LoadingLayer::preload()
 	animation3->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy2_down3.png"));
 	animation3->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy2_down4.png"));
 	animation3->setLoops(1);
-	animation3->setDelayPerUnit(0.2f);
+	animation3->setDelayPerUnit(0.1f);
 	AnimationCache::getInstance()->addAnimation(animation3,"enemy2Down");
 
 	auto animation4=Animation::create();
@@ -206,7 +206,7 @@ void LoadingLayer::preload()
 	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down5.png"));
 	animation4->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName("enemy3_down6.png"));
 	animation4->setLoops(1);
-	animation4->setDelayPerUnit(0.2f);
+	animation4->setDelayPerUnit(0.1f);
 	AnimationCache::getInstance()->addAnimation(animation4,"enemy3Down");
 
 	auto animation5=Animation::create();

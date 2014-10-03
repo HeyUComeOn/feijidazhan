@@ -1,6 +1,7 @@
 #include "GameLayer/PauseLayer.h"
 #include "GameLayer/InGameLayer.h"
 #include "SimpleAudioEngine.h"
+#include "MyUtility.h"
 
 using namespace CocosDenshion;
 USING_NS_CC;
@@ -28,12 +29,14 @@ bool PauseLayer::init()
 
 void PauseLayer::setViews()
 {
-	auto label1=Label::createWithTTF("Resume","fonts/COOPBL.TTF",36);
-	auto label2=Label::createWithTTF("Restart","fonts/COOPBL.TTF",36);
+	auto label1 = Label::createWithTTF(MyUtility::getUTF8Char("lblGoOn"), "fonts/hanyi.ttf", 80);
+	//auto label1=Label::createWithTTF("Resume","fonts/COOPBL.TTF",36);
+	auto label2 = Label::createWithTTF(MyUtility::getUTF8Char("lblRestart"), "fonts/hanyi.ttf", 80);
+	//auto label2=Label::createWithTTF("Restart","fonts/COOPBL.TTF",36);
 	auto item1=MenuItemLabel::create(label1,CC_CALLBACK_1(PauseLayer::Resume,this));
 	auto item2=MenuItemLabel::create(label2,CC_CALLBACK_1(PauseLayer::Restart,this));
 	auto menu=Menu::create(item1,item2,NULL);
-	menu->alignItemsVerticallyWithPadding(20);
+	menu->alignItemsVerticallyWithPadding(100);
 	this->addChild(menu);
 }
 

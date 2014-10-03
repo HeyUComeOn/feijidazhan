@@ -21,13 +21,13 @@ bool FlyPlane::init()
 			initWithSpriteFrameName("hero1.png");
 			this->setAnchorPoint(Vec2(0.5,0.5));
 			Vec2 verts[] ={ 
-				Vec2(35.000,-8.000),
-				Vec2(50.000,-48.000),
-				Vec2(32.000,-59.000),
-				Vec2(-36.000,-59.000), 
-				Vec2(-52.000,-49.000), 
-				Vec2(-37.000,-10.000), 
-				Vec2(0.000,39.000)
+				Vec2(35.000,-8.000)*5/3,
+				Vec2(50.000,-48.000)*5/3,
+				Vec2(32.000,-59.000)*5/3,
+				Vec2(-36.000,-59.000)*5/3, 
+				Vec2(-52.000,-49.000)*5/3, 
+				Vec2(-37.000,-10.000)*5/3, 
+				Vec2(0.000,39.000)*5/3
 			};
 
 			auto body = PhysicsBody::createPolygon(verts, 7);
@@ -49,14 +49,14 @@ void FlyPlane::Moveto(cocos2d::Vec2 pos)
 	if(isAlive&&!Director::getInstance()->isPaused())
 	{
 		auto FlySize=this->getContentSize();
-		if(pos.x<FlySize.width/2-52)
-			pos.x=FlySize.width/2-52;
-		if(pos.x>VisibleRect::right().x-FlySize.width/2+55)
-			pos.x=VisibleRect::right().x-FlySize.width/2+55;
+		if(pos.x<FlySize.width/2-82)
+			pos.x=FlySize.width/2-82;
+		if(pos.x>VisibleRect::right().x-FlySize.width/2+92)
+			pos.x=VisibleRect::right().x-FlySize.width/2+92;
 		if(pos.y<FlySize.height/2)
 			pos.y=FlySize.height/2;
-		if(pos.y>VisibleRect::top().y-FlySize.height/2+50)
-			pos.y=VisibleRect::top().y-FlySize.height/2+50;
+		if(pos.y>VisibleRect::top().y-FlySize.height/2+80)
+			pos.y=VisibleRect::top().y-FlySize.height/2+80;
 		this->setPosition(pos);
 	}
 }
@@ -64,9 +64,9 @@ void FlyPlane::Moveto(cocos2d::Vec2 pos)
 void FlyPlane::Destory()
 {
 	auto animation=AnimationCache::getInstance()->getAnimation("heroBlowup");
-	auto remo=RemoveSelf::create();
+	//auto remo=RemoveSelf::create();
 	auto animate=Animate::create(animation);
-	this->runAction(Sequence::create(animate,remo,NULL));
+	this->runAction(Sequence::create(animate,NULL));
 	//this->removeFromParent();
 }
 void FlyPlane::FlyAction()

@@ -20,7 +20,7 @@ bool bullet::init()
 		if(Sprite::init())
 		{
 			initWithSpriteFrameName("bullet1.png");
-			auto body = PhysicsBody::createBox(this->getContentSize());
+			auto body = PhysicsBody::createBox(this->getContentSize()*5/3);
 
 			body->setCategoryBitmask(0x01);			//0001
 			body->setCollisionBitmask(0x02);		//0010

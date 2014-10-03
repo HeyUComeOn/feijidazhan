@@ -6,6 +6,7 @@
 #include "GameObjects/Bomb.h"
 #include "GameLayer/PauseLayer.h"
 #include "SimpleAudioEngine.h"
+#include "MyUtility.h"
 using namespace CocosDenshion;
 USING_NS_CC;
 
@@ -84,6 +85,7 @@ Scene*InGameLayer::scene()
 //?????????研究放在init和enter中的区别对于像score这样的可变动的量
 void InGameLayer::setViews()
 {
+	
 	//////////////////添加UFO、Pause Menu start///////////////
 	auto bombSp = Sprite::createWithSpriteFrameName("bomb.png");
 	auto itemBomb = MenuItemSprite::create(bombSp,bombSp,CC_CALLBACK_0(InGameLayer::MenuBombCallback,this));
@@ -105,18 +107,43 @@ void InGameLayer::setViews()
 	menu2->setPosition(VisibleRect::leftBottom());
 	addChild(menu2);
 
-	auto numLabel = Label::createWithTTF("x0","fonts/hanyi.ttf",36);
-	numLabel->setPosition(VisibleRect::leftBottom()+Vec2(bombSp->getContentSize().width/2+60,bombSp->getContentSize().height/2));
-	numLabel->setTag(GameSceneNodeTagNumLabel);
-	numLabel->setVisible(false);
-	addChild(numLabel);
+	auto BombNumLabel = Label::createWithTTF("x0","fonts/hanyi.ttf",36);
+	BombNumLabel->setPosition(VisibleRect::leftBottom()+Vec2(bombSp->getContentSize().width/2+60,bombSp->getContentSize().height/2));
+	BombNumLabel->setTag(GameSceneNodeTagNumLabel);
+	BombNumLabel->setVisible(false);
+	addChild(BombNumLabel);
 
 	this->schedule(SEL_SCHEDULE(&InGameLayer::createBombs),20.0f);
 
 	///////////////////添加UFO、Pause Menu end///////////////////////////////
-	scoreLabel = Label::createWithBMFont("ui/font.fnt","0");
-	scoreLabel->setPosition(VisibleRect::leftTop()+Vec2(itemPause->getContentSize().width*3, -scoreLabel->getContentSize().height));
+
+	scoreLabel = Label::createWithTTF("0","fonts/hanyi.ttf",45);
+	scoreLabel->setPosition(VisibleRect::leftTop()+Vec2(itemPause->getContentSize().width*2, -scoreLabel->getContentSize().height));
 	addChild(scoreLabel,1000);
+
+	/////////////////最高分 start////////////////////////
+	UserDefault *defaults = UserDefault::getInstance();
+	int highScore = defaults->getIntegerForKey("highscore_key");    
+	if (highScore < score) {
+		highScore = score;
+		defaults->setIntegerForKey("highscore_key", highScore);
+	}
+	__String *text = __String::createWithFormat("%i", highScore);
+	auto lblHighScore = Label::createWithTTF(MyUtility::getUTF8Char("lblHighScore"), "fonts/hanyi.ttf", 45);
+
+	lblHighScore->setAnchorPoint(Vec2(0,0));
+
+	lblHighScore->setPosition(Vec2(VisibleRect::rightTop().x-2*lblHighScore->getContentSize().width ,scoreLabel->getPosition().y-15));
+
+	addChild(lblHighScore);
+
+	auto lblScoreOfHigh = Label::createWithTTF(text->getCString(), "fonts/hanyi.ttf", 45);
+	//lblScoreOfHigh->setColor(Color3B(75,255,255));	
+	lblScoreOfHigh->setAnchorPoint(Vec2(0,0));
+	lblScoreOfHigh->setPosition(lblHighScore->getPosition() + Vec2(200, 0));
+	lblScoreOfHigh->setTag(GameSceneNodelblHighScore);
+	addChild(lblScoreOfHigh);
+	//////////////////最高分 end/////////////////////////////
 
 	hero = FlyPlane::create();
 	hero->setPosition(Vec2(VisibleRect::center().x,120));//hero的contentsize为0，为什么
@@ -136,16 +163,20 @@ void InGameLayer::setViews()
 
 		////////////////////////////检测 飞机与敌人的碰撞 start//////////////////////////////////
 		//Dlog::showLog("A = %d  ------------ B = %d", spriteA->getTag(), spriteB->getTag());		
-		if (spriteA->getTag() == GameSceneNodeTagFighter && spriteB->getTag() == GameSceneNodeBatchTagEnemy)
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeTagFighter && spriteB->getTag() == GameSceneNodeBatchTagEnemy)
 		{
 			enemy1 = spriteB;
 		}
-		if (spriteA->getTag() == GameSceneNodeBatchTagEnemy && spriteB->getTag() == GameSceneNodeTagFighter)
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeBatchTagEnemy && spriteB->getTag() == GameSceneNodeTagFighter)
 		{
 			enemy1 = spriteA;
 		}
 		if (enemy1 != nullptr) {//发生碰撞
-			this->EnemyAttackPlane();
+			if(hero&&hero->getIsAlive())
+			{
+				this->EnemyAttackPlane();
+			}
+		
 			//this->handleFighterCollidingWithEnemy((Enemy*)enemy1);
 			return false;
 		}
@@ -153,8 +184,8 @@ void InGameLayer::setViews()
 
 		////////////////////////////检测 炮弹与敌人的碰撞 start////////////////////////////////
 		Node* enemy2 = nullptr;
-
-		if (spriteA->getTag() == GameSceneNodeBatchTagBullet && 
+		Node* bullet = nullptr;
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeBatchTagBullet && 
 			spriteB->getTag() == GameSceneNodeBatchTagEnemy)
 		{
 			//不可见的炮弹不发生碰撞
@@ -162,10 +193,11 @@ void InGameLayer::setViews()
 			//	return false;
 			//使得炮弹消失
 			//spriteA->setVisible(false);
-			spriteA->removeFromParentAndCleanup(true);
+			bullet = spriteA/*->removeFromParentAndCleanup(true)*/;
 			enemy2 = spriteB;
 		}
-		if (spriteA->getTag() == GameSceneNodeBatchTagEnemy 
+		
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeBatchTagEnemy 
 			&& spriteB->getTag() == GameSceneNodeBatchTagBullet)
 		{
 			//不可见的炮弹不发生碰撞
@@ -173,10 +205,11 @@ void InGameLayer::setViews()
 			//	return false;
 			//使得炮弹消失
 			//spriteB->setVisible(false);
-			spriteB->removeFromParent();
+			bullet = spriteB/*->removeFromParent()*/;
 			enemy2 = spriteA;
 		}
 		if (enemy2 != nullptr) {//发生碰撞
+			bullet->removeFromParent();
 			this->bulletAttackEnemy((EnemyBase*)enemy2);
 			//this->handleBulletCollidingWithEnemy((Enemy*)enemy2);
 			return false;
@@ -186,11 +219,11 @@ void InGameLayer::setViews()
 		////////////////////////////检测 飞机与UFO2的碰撞 start//////////////////////////////////
 		Dlog::showLog("A = %d  ------------ B = %d", spriteA->getTag(), spriteB->getTag());		
 		Node* enemy3 = nullptr;
-		if (spriteA->getTag() == GameSceneNodeTagFighter && spriteB->getTag() == GameSceneNodeBatchTagBomb2)
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeTagFighter && spriteB->getTag() == GameSceneNodeBatchTagBomb2)
 		{
 			enemy3 = spriteB;
 		}
-		if (spriteA->getTag() == GameSceneNodeBatchTagBomb2 && spriteB->getTag() == GameSceneNodeTagFighter)
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeBatchTagBomb2 && spriteB->getTag() == GameSceneNodeTagFighter)
 		{
 			enemy3 = spriteA;
 		}
@@ -207,11 +240,11 @@ void InGameLayer::setViews()
 		////////////////////////////检测 飞机与UFO1的碰撞 start//////////////////////////////////
 		Dlog::showLog("A = %d  ------------ B = %d", spriteA->getTag(), spriteB->getTag());		
 		Node* enemy4 = nullptr;
-		if (spriteA->getTag() == GameSceneNodeTagFighter && spriteB->getTag() == GameSceneNodeBatchTagBomb1)
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeTagFighter && spriteB->getTag() == GameSceneNodeBatchTagBomb1)
 		{
 			enemy4 = spriteB;
 		}
-		if (spriteA->getTag() == GameSceneNodeBatchTagBomb1 && spriteB->getTag() == GameSceneNodeTagFighter)
+		if (spriteA&&spriteB&&spriteA->getTag() == GameSceneNodeBatchTagBomb1 && spriteB->getTag() == GameSceneNodeTagFighter)
 		{
 			enemy4 = spriteA;
 		}
@@ -413,6 +446,7 @@ void InGameLayer::bulletAttackEnemy(EnemyBase*Ene)
 	Ene->hurt(1);
 	if(Ene->getIsBlowUp())
 	{
+		
 		switch (Ene->getEnemyType())
 		{
 		case 0:
@@ -437,6 +471,18 @@ void InGameLayer::bulletAttackEnemy(EnemyBase*Ene)
 		}
 		scoreLabel->setString(__String::createWithFormat("%d",score)->getCString());
 		EneVec.eraseObject(Ene);
+
+		UserDefault *defaults = UserDefault::getInstance();
+		int highScore = defaults->getIntegerForKey("highscore_key");    
+		if (highScore < score) {
+			highScore = score;
+			defaults->setIntegerForKey("highscore_key", highScore);
+		}
+		__String *text = __String::createWithFormat("%i", highScore);
+
+		auto lblScoreOfHigh = static_cast<Label*>(this->getChildByTag(GameSceneNodelblHighScore));
+		lblScoreOfHigh->setString(text->getCString());
+	
 	}
 	/*
 	break;
@@ -462,8 +508,8 @@ void InGameLayer::EnemyAttackPlane()
 	{
 	if(heroRect.intersectsRect((*it)->getBoundingBox()))
 	{*/
-	hero->Destory();//hero被销毁了
 	hero->setIsAlive(false);
+	hero->Destory();//hero被销毁了
 	hero=NULL;
 	GameOver();
 	/*
@@ -482,6 +528,7 @@ void InGameLayer::GameOver()
 
 	Director::getInstance()->getEventDispatcher()->removeEventListenersForTarget(this);
 	Director::getInstance()->replaceScene(TransitionCrossFade::create(1.5f,welcomeLayer::scene()));
+	SimpleAudioEngine::getInstance()->stopBackgroundMusic(true);
 }
 
 void InGameLayer::cleanAllEnemys()
@@ -517,6 +564,18 @@ void InGameLayer::MenuBombCallback()
 	{
 		label->setString(__String::createWithFormat("x%d",bombNum)->getCString());
 	}
+	score += 100;
+	scoreLabel->setString(__String::createWithFormat("%d",score)->getCString());
+	UserDefault *defaults = UserDefault::getInstance();
+	int highScore = defaults->getIntegerForKey("highscore_key");    
+	if (highScore < score) {
+		highScore = score;
+		defaults->setIntegerForKey("highscore_key", highScore);
+	}
+	__String *text = __String::createWithFormat("%i", highScore);
+
+	auto lblScoreOfHigh = static_cast<Label*>(this->getChildByTag(GameSceneNodelblHighScore));
+	lblScoreOfHigh->setString(text->getCString());
 }
 
 void InGameLayer::createBombs(float delta)
